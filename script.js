@@ -1,41 +1,90 @@
-const display = document.querySelector("p.display");
-const characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const displayTop = document.querySelector(".display-top");
+const displayBottom = document.querySelector(".display-bottom");
+const btnNumber = document.querySelectorAll("button.number");
+const btnOperator = document.querySelectorAll("button.operator");
+const btnResult = document.querySelector(".result");
 
 let n1 = "";
 let n2 = "";
+let operator = "";
+let getN2 = false;
+let getResult = false;
 
-function writeNum(e) {
-  if (!characters.includes(e.key)) return;
-  n1 ? (n1 += e.key) : (n1 = e.key);
-}
+function getOperand(e) {
+  const input = e.target.textContent;
 
-function writeFloatNum(e) {
-  if ([",", "."].includes(e.key) && !n1.includes(",")) n1 += ",";
-  display.textContent = n1;
-}
+  // Get first operand
+  if (!getN2) {
+    n1 ? (n1 += input) : (n1 = input);
 
-function deleteNum(e) {
-  if (e.key === "Backspace") {
-    n1 = n1.slice(0, -1);
+    // Add first operand to calc display
+    displayBottom.textContent = n1;
   }
-  display.textContent = n1;
-}
 
-function clear(e) {
-  if (e.key === "r") {
-    n1 = "";
-    n2 = "";
-    display.textContent = "0";
+  // Get second operand
+  if (getN2) {
+    n2 = input;
+    displayBottom.textContent = n2;
   }
 }
 
-function showNum(e) {
-  if (e.key === "Enter") return;
-  console.log("Boom");
+function getOperator(e) {
+  // Get operator
+  operator = e.target.textContent;
+
+  // Continue to second operand
+  getN2 = true;
+  getResult = true;
+
+  // Add first operand and operator to calc top display
+  displayTop.textContent = `${n1} ${operator}`;
 }
 
-function operate() {}
+function result() {
+  displayTop.textContent = `${n1} ${operator} ${n2} =`;
+  if (getResult) n1 = operate(n1, n2, operator);
 
-document.addEventListener("keydown", writeNum);
-document.addEventListener("keydown", deleteNum);
-document.addEventListener("keydown", clear);
+  // Show result in calc top display
+  // displayTop.textContent += ` ${n2} =`;
+
+  displayBottom.textContent = n1;
+  getResult = false;
+}
+
+function add(a, b) {
+  return a + b;
+}
+function substract(a, b) {
+  return a - b;
+}
+function multiply(a, b) {
+  return a * b;
+}
+function divide(a, b) {
+  return a / b;
+}
+
+function operate(n1, n2, op) {
+  let a = Number(n1);
+  let b = Number(n2);
+  console.log(typeof n1);
+  switch (op) {
+    case "+":
+      return add(a, b);
+      break;
+    case "-":
+      return substract(a, b);
+      break;
+    case "×":
+      return multiply(a, b);
+      break;
+    case "÷":
+      return divide(a, b);
+  }
+}
+
+btnNumber.forEach((item) => item.addEventListener("click", getOperand));
+
+btnOperator.forEach((item) => item.addEventListener("click", getOperator));
+
+btnResult.addEventListener("click", result);
