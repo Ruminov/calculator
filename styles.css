@@ -38,7 +38,7 @@ body {
 .display-bottom {
   background-color: aqua;
   flex: 2;
-  font-size: 42px;
+  font-size: 36px;
   line-height: 1;
 }
 
