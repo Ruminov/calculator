@@ -5,6 +5,8 @@ const btnOperator = document.querySelectorAll("button.operator");
 const btnResult = document.querySelector(".result");
 const btnClear = document.querySelector(".clear");
 const btnDelete = document.querySelector(".delete");
+const btnFloat = document.querySelector(".float");
+const btnNegate = document.querySelector(".negate");
 
 let n1 = "";
 let n2 = "";
@@ -14,20 +16,25 @@ let hasN2 = false;
 let hasOperator = false;
 
 function getOperand(e) {
+  // Limit number of operands to 15
   if (n1.length > 15 || n2.length > 15) return;
+
+  // Limit input of 0
+  if (e.target.id === "0") {
+    if (n1 === "0" && !hasOperator) return;
+    if (n2 === "0") return;
+  }
+
+  // Get and display first operand
   const input = e.target.textContent;
-
-  // Get first operand
   if (!hasN1) {
-    n1 += input;
-
-    // Show operand 1 in display-bottom
+    n1 === "0" ? (n1 = input) : (n1 += input);
     displayBottom.textContent = n1;
   }
 
-  // Get second operand
+  // Get and display second operand
   if (hasN1) {
-    n2 += input;
+    n2 === "0" ? (n2 = input) : (n2 += input);
     displayBottom.textContent = n2;
     hasN2 = true;
   }
@@ -91,9 +98,12 @@ function result(e) {
       n2 = "";
       return;
     }
-    // Do match operation
-    n1 = operate(n1, n2, operator);
-    if (!Number.isInteger(n1)) n1 = n1.toFixed(2);
+    // Do math operation
+    n1 = operate(n1, n2, operator).toString();
+
+    // Limit float numbers
+    if (!Number.isInteger(+n1)) n1 = n1.toFixed(2);
+
     // Show total in display-bottom
     displayBottom.textContent = n1.length > 15 ? n1.slice(0, 16) : n1;
 
@@ -120,7 +130,7 @@ function clear() {
   hasOperator = false;
 }
 
-function deleteNum(e) {
+function deleteNum() {
   if (!hasN1) {
     n1 = n1.slice(0, -1);
     displayBottom.textContent = n1 ? n1 : 0;
@@ -131,12 +141,34 @@ function deleteNum(e) {
   }
 }
 
+function float() {
+  if (n1 && !hasN1 && !n1.includes(".")) {
+    n1 += ".";
+    displayBottom.textContent = n1;
+  } else if (n2 && hasN1 && !n2.includes(".")) {
+    n2 += ".";
+    displayBottom.textContent = n2;
+  }
+}
+
+function negate() {
+  if (n1 && !hasOperator && !hasN2) {
+    n1 = n1.includes("-") ? n1.replace("-", "") : `-${n1}`;
+    displayBottom.textContent = n1;
+  }
+  if (hasN1 && n2) {
+    n2 = n2.includes("-") ? n2.replace("-", "") : `-${n2}`;
+    displayBottom.textContent = n2;
+  }
+}
+
 const clickEvent = new Event("click");
 
 // Add keyboard support
 window.addEventListener("keydown", function (e) {
   const button = document.getElementById(e.key);
   if (button) button.click();
+  if (e.key === ",") btnFloat.click();
 });
 
 btnNumber.forEach((item) => item.addEventListener("click", getOperand));
@@ -146,6 +178,8 @@ btnOperator.forEach((item) => item.addEventListener("click", getOperator));
 btnResult.addEventListener("click", result);
 btnClear.addEventListener("click", clear);
 btnDelete.addEventListener("click", deleteNum);
+btnFloat.addEventListener("click", float);
+btnNegate.addEventListener("click", negate);
 
 // get operand 1
 // display-bottom operand 1
