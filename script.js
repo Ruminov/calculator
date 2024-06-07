@@ -41,6 +41,10 @@ function getOperand(e) {
 }
 
 function getOperator(e) {
+  if (n1 && operator && n2) {
+    result(e);
+  }
+
   // Get operator
   operator = e.target.textContent;
 
@@ -52,10 +56,6 @@ function getOperator(e) {
   if (n1 && operator) {
     hasN1 = true;
     hasOperator = true;
-  }
-
-  if (n1 && operator && n2) {
-    result(e);
   }
 }
 
