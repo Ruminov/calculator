@@ -16,8 +16,8 @@ let hasN2 = false;
 let hasOperator = false;
 
 function getOperand(e) {
-  // Limit number of operands to 15
-  if (n1.length > 15 || n2.length > 15) return;
+  // Limit number of operands to 8
+  // if (n1.length > 8 || n2.length > 8) return;
 
   // Limit input of 0
   if (e.target.id === "0") {
@@ -27,13 +27,13 @@ function getOperand(e) {
 
   // Get and display first operand
   const input = e.target.textContent;
-  if (!hasN1) {
+  if (!hasN1 && n1.length < 9) {
     n1 === "0" ? (n1 = input) : (n1 += input);
     displayBottom.textContent = n1;
   }
 
   // Get and display second operand
-  if (hasN1) {
+  if (hasN1 && n2.length < 9) {
     n2 === "0" ? (n2 = input) : (n2 += input);
     displayBottom.textContent = n2;
     hasN2 = true;
@@ -102,16 +102,16 @@ function result(e) {
     n1 = operate(n1, n2, operator).toString();
 
     // Limit float numbers
-    if (!Number.isInteger(+n1)) n1 = n1.toFixed(2);
+    if (!Number.isInteger(+n1)) n1 = Number(n1).toFixed(2);
 
     // Show total in display-bottom
-    displayBottom.textContent = n1.length > 15 ? n1.slice(0, 16) : n1;
+    displayBottom.textContent = n1.length > 13 ? n1.slice(0, 14) : n1;
 
     // Show operand 1, operator and operand 2 in display-top
     if (e.target.matches(".result")) {
-      displayTop.textContent = `${total} ${operator} ${n2} =`;
+      displayTop.textContent = `${cut(total)} ${operator} ${cut(n2)} =`;
     } else {
-      displayTop.textContent = `${n1} ${operator}`;
+      displayTop.textContent = `${cut(n1)} ${operator}`;
     }
   }
   hasOperator = false;
@@ -128,6 +128,10 @@ function clear() {
   hasN1 = false;
   hasN2 = false;
   hasOperator = false;
+}
+
+function cut(n) {
+  return n.length > 9 ? n.slice(0, 10) : n;
 }
 
 function deleteNum() {
@@ -167,8 +171,19 @@ const clickEvent = new Event("click");
 // Add keyboard support
 window.addEventListener("keydown", function (e) {
   const button = document.getElementById(e.key);
-  if (button) button.click();
-  if (e.key === ",") btnFloat.click();
+
+  if (button) {
+    button.click();
+
+    // Change button background color when clicked.
+    button.classList.toggle("clicked");
+    setTimeout(() => button.classList.toggle("clicked"), "150");
+  }
+  if (e.key === ",") {
+    btnFloat.click();
+    btnFloat.classList.toggle("clicked");
+    setTimeout(() => btnFloat.classList.toggle("clicked"), "150");
+  }
 });
 
 btnNumber.forEach((item) => item.addEventListener("click", getOperand));
@@ -180,18 +195,3 @@ btnClear.addEventListener("click", clear);
 btnDelete.addEventListener("click", deleteNum);
 btnFloat.addEventListener("click", float);
 btnNegate.addEventListener("click", negate);
-
-// get operand 1
-// display-bottom operand 1
-
-// get operator
-// display-top operand 1 and operator
-// Switch to operand 2 capture
-
-// get operand 2
-// display-bottom operand 2
-
-// Do math operation
-// display-top operand 1, operator and operand 2
-// display-bottom result
-//
