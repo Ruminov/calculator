@@ -16,9 +16,6 @@ let hasN2 = false;
 let hasOperator = false;
 
 function getOperand(e) {
-  // Limit number of operands to 8
-  // if (n1.length > 8 || n2.length > 8) return;
-
   // Limit input of 0
   if (e.target.id === "0") {
     if (n1 === "0" && !hasOperator) return;
@@ -45,6 +42,7 @@ function getOperator(e) {
     result(e);
   }
 
+  if (!n1 && !hasN1) n1 = "0";
   // Get operator
   operator = e.target.textContent;
 
@@ -165,8 +163,6 @@ function negate() {
     displayBottom.textContent = n2;
   }
 }
-
-const clickEvent = new Event("click");
 
 // Add keyboard support
 window.addEventListener("keydown", function (e) {
